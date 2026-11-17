@@ -43,9 +43,9 @@
 #define SDCARD_CLK 16 //FSPI_CLK
 #define SDCARD_MOSI 15 //FSPID
 #define SDCARD_MISO 17 //FSPI_Q
-// Connect the GPS RX/TX/Power to ESP pins RXD0 and TXD0
-#define RXD0 44 //geel is Tx Ublox, Beitian wit is Tx
-#define TXD0 43 //groen is Rx Ublox, Beitian groen is Rx
+// Connect the GPS RX/TX/Power to ESP pins RXD1 and TXD1
+#define RXD1 4 //geel is Tx Ublox, Beitian wit is Tx
+#define TXD1 5 //groen is Rx Ublox, Beitian groen is Rx
 #define POWER1_ubx 1
 #define POWER2_ubx 2
 #define POWER1_ubx_NUM GPIO_NUM_2

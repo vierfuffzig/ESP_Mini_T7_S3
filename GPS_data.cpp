@@ -22,7 +22,7 @@ void GPS_data::push_data(float latitude,float longitude,uint32_t gSpeed) {//gspe
           Serial.print("Set ublox UBX_PORTABLE ");
           Model_info(0);
           for(int i = 0; i < sizeof(UBX_PORTABLE); i++) {                        
-              Serial0.write( pgm_read_byte(UBX_PORTABLE+i) );
+              Serial1.write( pgm_read_byte(UBX_PORTABLE+i) );
               }
       }
     if((S2.avg_s<15000)&(config.dynamic_model==1)&dynamic_state==1){  //omschakelen naar dynamic_model "portable", only works with speed<25 m/s !!!
@@ -30,7 +30,7 @@ void GPS_data::push_data(float latitude,float longitude,uint32_t gSpeed) {//gspe
               Serial.print("Set ublox UBX_SEA ");
               Model_info(1);
               for(int i = 0; i < sizeof(UBX_SEA); i++) {                        
-                  Serial0.write( pgm_read_byte(UBX_SEA+i) );
+                  Serial1.write( pgm_read_byte(UBX_SEA+i) );
                   }
           }
     index_GPS++;//altijd index ophogen na update alle instanties  

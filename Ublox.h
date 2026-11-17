@@ -7,8 +7,8 @@
 #include <driver/rtc_io.h>
 #include <driver/gpio.h>
 
-#define RXD0 44  //geel is Tx Ublox, Beitian wit is Tx
-#define TXD0 43  //groen is Rx Ublox, Beitian groen is Rx
+#define RXD1 4  //geel is Tx Ublox, Beitian wit is Tx
+#define TXD1 5  //groen is Rx Ublox, Beitian groen is Rx
 
 //ublox M8, baudrate setting and only ubx out is one command !!!!
 const char UBLOX_UBX_BD9600[] PROGMEM = {

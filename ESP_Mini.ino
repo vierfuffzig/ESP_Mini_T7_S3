@@ -71,20 +71,20 @@ void setup() {
  error=gpio_set_drive_capability(POWER2_ubx_NUM,GPIO_DRIVE_CAP_3);
  Serial.println(error);
   Ublox_on();//beitian bn220 power supply over output 15, 16
-  Serial0.setRxBufferSize(1024); // increasing buffer size ?
+  Serial1.setRxBufferSize(1024); // increasing buffer size ?
   if((config.ublox_type==M8_38400BD)|(config.ublox_type==M9_38400BD)|  (config.ublox_type==M10_38400BD)){
-    Serial0.begin(38400, SERIAL_8N1, RXD0, TXD0); //connection to ublox over Serial0 
+    Serial1.begin(38400, SERIAL_8N1, RXD1, TXD1); //connection to ublox over Serial1 
     Serial.println("Serial on 38400 bd");
     }
   else{
-   Serial0.begin(9600, SERIAL_8N1, RXD0, TXD0); //connection to ublox over Serial0
+   Serial1.begin(9600, SERIAL_8N1, RXD1, TXD1); //connection to ublox over Serial1
    Serial.println("Serial on 9600 bd");
    }   
-  Serial.println("Serial0 Txd is on pin: "+String(TXD0));
-  Serial.println("Serial0 Rxd is on pin: "+String(RXD0));
+  Serial.println("Serial1 Txd is on pin: "+String(TXD1));
+  Serial.println("Serial1 Rxd is on pin: "+String(RXD1));
   for(int i=0;i<425;i++){//Startup string van ublox to serial, ca 424 char !!
-     while (Serial0.available()) {
-              Serial.print(char(Serial0.read()));
+     while (Serial1.available()) {
+              Serial.print(char(Serial1.read()));
               }
      delay(2);   //was delay (1)
      }
@@ -307,8 +307,8 @@ void taskOne( void * parameter )
         #endif
         }
    else msgType = processGPS(); //only decoding if no Wifi connection
-          //while (Serial0.available()) {
-          //Serial.print(char(Serial0.read()));}  
+          //while (Serial1.available()) {
+          //Serial.print(char(Serial1.read()));}  
  if ( msgType == MT_NAV_DOP ) {      //Logging after NAV_DOP, ublox sends first NAV_PVT, and then NAV_DOP.  
         if((ubxMessage.navPvt.numSV>=MIN_numSV_FIRST_FIX)&((ubxMessage.navPvt.sAcc/1000.0f)<MAX_Sacc_FIRST_FIX)&(ubxMessage.navPvt.valid>=7)&(GPS_Signal_OK==false)){
               GPS_Signal_OK=true;
