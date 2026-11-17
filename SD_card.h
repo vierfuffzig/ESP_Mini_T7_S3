@@ -32,7 +32,7 @@ extern GPS_time S10;
 extern Alfa_speed A250;
 extern GPS_data Ublox; // create an object storing GPS_data, definition in RTOS
 extern GPS_SAT_info Ublox_Sat;//create an object storing GPS_SAT info !
-extern int nav_pvt_message_nr; 
+extern int nav_pvt_message; 
 extern int nav_sat_message;
 
 struct Config {

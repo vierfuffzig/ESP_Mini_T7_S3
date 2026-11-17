@@ -22,7 +22,7 @@ void GPS_data::push_data(float latitude,float longitude,uint32_t gSpeed) {//gspe
           Serial.print("Set ublox UBX_PORTABLE ");
           Model_info(0);
           for(int i = 0; i < sizeof(UBX_PORTABLE); i++) {                        
-              Serial2.write( pgm_read_byte(UBX_PORTABLE+i) );
+              Serial0.write( pgm_read_byte(UBX_PORTABLE+i) );
               }
       }
     if((S2.avg_s<15000)&(config.dynamic_model==1)&dynamic_state==1){  //omschakelen naar dynamic_model "portable", only works with speed<25 m/s !!!
@@ -30,7 +30,7 @@ void GPS_data::push_data(float latitude,float longitude,uint32_t gSpeed) {//gspe
               Serial.print("Set ublox UBX_SEA ");
               Model_info(1);
               for(int i = 0; i < sizeof(UBX_SEA); i++) {                        
-                  Serial2.write( pgm_read_byte(UBX_SEA+i) );
+                  Serial0.write( pgm_read_byte(UBX_SEA+i) );
                   }
           }
     index_GPS++;//altijd index ophogen na update alle instanties  
@@ -177,7 +177,7 @@ double GPS_speed::Update_distance(int actual_run){
         avg_speed[0]=m_max_speed; 
         m_Distance[0]=m_distance;
         nr_samples[0]=m_sample;
-        message_nr[0]=nav_pvt_message_nr;
+        message_nr[0]=nav_pvt_message;
         }
    if(m_max_speed>avg_speed[9])display_max_speed=m_max_speed;//update on the fly, dat klopt hier niet !!!
    else display_max_speed=avg_speed[9];      
@@ -322,7 +322,7 @@ float Alfa_speed::Update_Alfa(GPS_speed M){
           time_sec[0]=tmstruct.tm_sec;
           this_run[0]=alfa_counter;//was alfa_count
           avg_speed[0]=alfa_speed_max; 
-          message_nr[0]=nav_pvt_message_nr;
+          message_nr[0]=nav_pvt_message;
           alfa_distance[0]=M.m_distance_alfa/config.sample_rate;
           }
     }

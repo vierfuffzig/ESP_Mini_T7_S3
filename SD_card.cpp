@@ -126,13 +126,13 @@ void Log_to_SD(void){
                 static int interval;
                 interval=ubxMessage.navPvt.iTOW-old_iTOW;
                 old_iTOW=ubxMessage.navPvt.iTOW;            
-                if((interval>time_out_nav_pvt)&(sdOK==true)&(nav_pvt_message_nr>10)){//check for timeout navPvt message !!
+                if((interval>time_out_nav_pvt)&(sdOK==true)&(nav_pvt_message>10)){//check for timeout navPvt message !!
                      next_gpy_full_frame=1;
                      dataStr[0] = 0;
                      dtostrf(ubxMessage.navPvt.hour, 2, 0, Buffer);AddString(); 
                      dtostrf(ubxMessage.navPvt.minute, 2, 0, Buffer);AddString(); 
                      dtostrf(ubxMessage.navPvt.second, 2, 0, Buffer);AddString(); 
-                     ltoa(nav_pvt_message_nr,Buffer,10);AddString();
+                     ltoa(nav_pvt_message,Buffer,10);AddString();
                      strcat(dataStr, "Lost ubx frame!\n");
                      if(config.logTXT) {errorfile.print(dataStr);}
                      Serial.print("Lost ubx frame");
@@ -272,7 +272,7 @@ void Model_info(int model){
   if(model==1)errorfile.print("Sea"); 
   else errorfile.print("Portable"); 
   strcat(message, " Msg_nr: ");
-  dtostrf(nav_pvt_message_nr, 1, 0, tekst);
+  dtostrf(nav_pvt_message, 1, 0, tekst);
   strcat(message,tekst); 
   errorfile.println(message); 
   }

@@ -49,12 +49,12 @@ void setup() {
   ledcAttachPin(BUILD_IN_LED,0);
   ledcWrite(0,128);
   Serial.begin(115200);
-   while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB port only on the S3
-  }
+  //while (!Serial) {
+  //; // dont wait for usb serial when powered from bat!
+  //}
   delay(5000);
   Serial.println("setup Serial over USB ! ");
- ledcWrite(0,255);
+  ledcWrite(0,255);
   static const int spiClk = 1000000; // 1 MHz
   sdSPI.begin(SDCARD_CLK, SDCARD_MISO, SDCARD_MOSI, SDCARD_SS);//default 20 MHz gezet worden !
   print_wakeup_reason(); //Print the wakeup reason for ESP32, go back to sleep is timer is wake-up source !
@@ -71,20 +71,20 @@ void setup() {
  error=gpio_set_drive_capability(POWER2_ubx_NUM,GPIO_DRIVE_CAP_3);
  Serial.println(error);
   Ublox_on();//beitian bn220 power supply over output 15, 16
-  Serial2.setRxBufferSize(1024); // increasing buffer size ?
+  Serial0.setRxBufferSize(1024); // increasing buffer size ?
   if((config.ublox_type==M8_38400BD)|(config.ublox_type==M9_38400BD)|  (config.ublox_type==M10_38400BD)){
-    Serial2.begin(38400, SERIAL_8N1, RXD2, TXD2); //connection to ublox over Serial2 
-    Serial.println("Serial 2 on 38400 bd");
+    Serial0.begin(38400, SERIAL_8N1, RXD0, TXD0); //connection to ublox over Serial0 
+    Serial.println("Serial on 38400 bd");
     }
   else{
-   Serial2.begin(9600, SERIAL_8N1, RXD2, TXD2); //connection to ublox over Serial2
-   Serial.println("Serial 2 on 9600 bd");
+   Serial0.begin(9600, SERIAL_8N1, RXD0, TXD0); //connection to ublox over Serial0
+   Serial.println("Serial on 9600 bd");
    }   
-  Serial.println("Serial2 Txd is on pin: "+String(TXD2));
-  Serial.println("Serial2 Rxd is on pin: "+String(RXD2));
+  Serial.println("Serial0 Txd is on pin: "+String(TXD0));
+  Serial.println("Serial0 Rxd is on pin: "+String(RXD0));
   for(int i=0;i<425;i++){//Startup string van ublox to serial, ca 424 char !!
-     while (Serial2.available()) {
-              Serial.print(char(Serial2.read()));
+     while (Serial0.available()) {
+              Serial.print(char(Serial0.read()));
               }
      delay(2);   //was delay (1)
      }
@@ -236,7 +236,8 @@ void loop() {
   int wdt_task1_duration=millis()-wdt_task1;
   int task_timeout=(WDT_TIMEOUT -1)*1000;//1 second less then reboot timeout 
   if((wdt_task0_duration<task_timeout)&(wdt_task1_duration<task_timeout)){
-    esp_err_t result = esp_task_wdt_init(WDT_TIMEOUT, true);//only way I found to reset the watchdog timer....
+    esp_task_wdt_init(WDT_TIMEOUT, true);
+    //esp_err_t result = esp_task_wdt_init(WDT_TIMEOUT, true);//only way I found to reset the watchdog timer....
     //Serial.println(result);
     delay(100);
     }
@@ -252,9 +253,10 @@ void loop() {
 
 void taskOne( void * parameter )
 {
- while(true){ 
-  static int print_time1=0;
-  if((millis()-print_time1>1000)){Serial.println("Task 1 is running");print_time1=millis();}
+  while(true){ 
+    static int print_time1=0;
+    if((millis()-print_time1>1000)){Serial.println("Task 1 is running");print_time1=millis();}
+  
    wdt_task0=millis();
    
    if(Long_push_WakeUp.Button_pushed()) Shut_down();
@@ -305,8 +307,8 @@ void taskOne( void * parameter )
         #endif
         }
    else msgType = processGPS(); //only decoding if no Wifi connection
-          //while (Serial2.available()) {
-          //Serial.print(char(Serial2.read()));}  
+          //while (Serial0.available()) {
+          //Serial.print(char(Serial0.read()));}  
  if ( msgType == MT_NAV_DOP ) {      //Logging after NAV_DOP, ublox sends first NAV_PVT, and then NAV_DOP.  
         if((ubxMessage.navPvt.numSV>=MIN_numSV_FIRST_FIX)&((ubxMessage.navPvt.sAcc/1000.0f)<MAX_Sacc_FIRST_FIX)&(ubxMessage.navPvt.valid>=7)&(GPS_Signal_OK==false)){
               GPS_Signal_OK=true;
@@ -331,6 +333,8 @@ void taskOne( void * parameter )
                   float sAcc=ubxMessage.navPvt.sAcc/1000;
                   gps_speed=ubxMessage.navPvt.gSpeed; //hier alles naar mm/s !!
                   static int last_flush_time=0;
+                  Log_to_SD();
+                  //Serial.println("Logging to SD");
                   last_gps_msg=millis();
                   if((millis()-last_flush_time)>60000){
                       Flush_files();
@@ -339,7 +343,7 @@ void taskOne( void * parameter )
                   if((ubxMessage.navPvt.numSV<=MIN_numSV_GPS_SPEED_OK)|((ubxMessage.navPvt.sAcc/1000.0f)>MAX_Sacc_GPS_SPEED_OK)|(ubxMessage.navPvt.gSpeed/1000.0f>MAX_GPS_SPEED_OK)){
                       gps_speed=0;
                       } 
-                  Log_to_SD();//hier wordt ook geprint naar serial !!
+                  //Log_to_SD();//hier wordt ook geprint naar serial !!
                   Ublox.push_data(ubxMessage.navPvt.lat/10000000.0f,ubxMessage.navPvt.lon/10000000.0f,gps_speed);   
                   run_count=New_run_detection(ubxMessage.navPvt.heading/100000.0f,S2.avg_s); 
                   alfa_window=Alfa_indicator(M250,M100,ubxMessage.navPvt.heading/100000.0f);
@@ -390,9 +394,10 @@ void taskOne( void * parameter )
 void taskTwo( void * parameter)
 {
   while(true){ 
-    static int print_time=0;
-    if((millis()-print_time>1000)){Serial.println("Task 2 is running");print_time=millis();}
-    wdt_task1=millis();
+    static int print_time2=0;
+    if((millis()-print_time2>1000)){Serial.println("Task 2 is running");print_time2=millis();}
+  
+   wdt_task1=millis();
 
    for (int dutyCycle = 0; dutyCycle <= 255; dutyCycle++) {
     ledcWrite(0, dutyCycle);

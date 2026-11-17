@@ -29,7 +29,7 @@ int nav_pvt_message=0;
 int old_message=0;
 int nav_sat_message=0;
 int next_gpy_full_frame=0;
-int nav_pvt_message_nr=0;
+//int nav_pvt_message_nr=0;
 int msgType;
 
 int low_bat_count;
@@ -136,6 +136,7 @@ void go_to_sleep(uint64_t sleep_time){
   Serial.println("Going to sleep now");
   Serial.flush(); 
   delay(100);
+  rtc_gpio_isolate(GPIO_NUM_xx);
   esp_deep_sleep(uS_TO_S_FACTOR*sleep_time);
 }
 

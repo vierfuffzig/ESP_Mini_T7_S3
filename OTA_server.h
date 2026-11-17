@@ -100,7 +100,7 @@ void SD_file_download(String filename)
     if (download) 
     {
       downloading_file=true;
-      filename.remove(0,1);//remove 1 character starting at index 0, this is /, after downloading -> _filename....
+      //filename.remove(0,1);//remove 1 character starting at index 0, this is /, after downloading -> _filename....
       server.sendHeader("Content-Disposition", "attachment; filename="+filename);
       server.sendHeader("Connection", "close");
       server.streamFile(download, "application/octet-stream");
@@ -146,7 +146,7 @@ void printDirectory(const char * dirname, uint8_t levels)
     else
     {
       String filename =String(file.name());
-      filename.remove(0,1);//remove 1 character starting at index 0
+      //filename.remove(0,1);//remove 1 character starting at index 0
       webpage += "<tr><td width='20%'>"+filename+"</td>";
       int bytes = file.size();
       String fsize = "";
@@ -254,10 +254,20 @@ void SD_dir(int archive)
     }
 
     File root = SD.open("/");
+    uint64_t free_kbytes;
+    if(sdOK) {
+        
+        uint64_t totalBytes=SD.totalBytes();
+        uint64_t usedBytes=SD.usedBytes();
+        free_kbytes=(totalBytes-usedBytes)/1024;
+        }
+     String free_space = "Free storage space = " + file_size(free_kbytes);
+    
     if (root) {
       root.rewindDirectory();
       SendHTML_Header();   
       webpage += F("<table id='esplogger'>");
+      webpage += "<h3>" + free_space + "</h3>";
       webpage += F("<tr><th>Name</th><th>Size</th><th>Timestamp</th><th>Download</th><th>Delete</th></tr>");
       printDirectory("/",archive);
       webpage += F("\n</table>");
