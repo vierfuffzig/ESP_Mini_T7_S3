@@ -4,8 +4,8 @@
 //#define STATIC_DEBUG        //indien gps test zonder snelheid en met wifi actief
 //#define DLS                  //set date on march 26 1:55, to test daylightsaving
 //#define GPIO12_ACTIF        //if GPIO12 is used as wake up, standard GPIO12 function is not activated !!
-#define WAKE_UP_GPIO 0          //is also boot strap pin for the S3, if high@boot -> bootloader USB CDC activated
-#define GPIO_NUM_xx GPIO_NUM_0   //default GPIO_NUM_39 type is no int
+#define WAKE_UP_GPIO 11          //set to any unused pin for reed-switch
+#define GPIO_NUM_xx GPIO_NUM_11
 #define MIN_SPEED_START_LOGGING 5        //set 0 for testing. was 2000 (in mm/s, 2s average) 
 #define TIME_DELAY_FIRST_FIX 10 //10 navpvt messages alvorens start loggen
 
